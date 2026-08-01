@@ -1,0 +1,634 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e7e9ee;
+  --muted: #9aa3b2;
+  --accent: #6ea8fe;
+  --accent-strong: #3b82f6;
+  --chord: #ffb454;
+  --radius: 12px;
+  --mono: "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Panels */
+.panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* Fullscreen icon button, pinned to the bottom-right of each panel. */
+.fs-button {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.12s, background 0.12s, color 0.12s, transform 0.05s;
+}
+
+.fs-button:hover {
+  opacity: 1;
+  background: #262b36;
+  color: var(--text);
+}
+
+.fs-button:active {
+  transform: translateY(1px);
+}
+
+.panel.fullscreen .fs-button {
+  opacity: 0.85;
+  top: 12px;
+  right: 12px;
+  bottom: auto;
+  z-index: 1001;
+}
+
+/* Keep the header actions clear of the fullscreen close button. */
+.panel.fullscreen .panel-header {
+  padding-right: 50px;
+}
+
+/* Auto-scroll transport (play/pause + pace slider). */
+.autoscroll-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-right: 46px; /* clear the fullscreen button in the bottom-right */
+  flex-wrap: wrap;
+}
+
+.autoscroll-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.autoscroll-toggle.is-playing {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.autoscroll-pace {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.autoscroll-label {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pace-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pace-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 8px;
+}
+
+.autoscroll-value {
+  width: 3.2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 4px 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-2);
+  cursor: text;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.autoscroll-value:focus {
+  outline: none;
+  border-color: var(--accent-strong);
+}
+
+/* Hide number-input spinner arrows; the +/- buttons handle stepping. */
+.autoscroll-value::-webkit-outer-spin-button,
+.autoscroll-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Float the transport as a centered pill while in fullscreen. */
+.panel.fullscreen .autoscroll-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 16px;
+  width: min(520px, calc(100% - 32px));
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  z-index: 1001;
+}
+
+/* Leave room so the floating transport doesn't cover the last lines. */
+.output-panel.fullscreen .sheet {
+  padding-bottom: 76px;
+}
+
+.input-panel.fullscreen .sheet-textarea {
+  padding-bottom: 76px;
+}
+
+.input-panel .hint {
+  padding-right: 46px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+/* Fullscreen overlay for a panel (works on iPad Safari, unlike the
+   element Fullscreen API). */
+.panel.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px;
+}
+
+.input-panel.fullscreen .sheet-textarea {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+.output-panel.fullscreen .sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.output-panel.fullscreen .sheet-scroll {
+  max-height: none;
+}
+
+/* Controls */
+.controls-panel {
+  margin-bottom: 16px;
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.offset-pill {
+  width: 72px;
+  text-align: center;
+  padding: 8px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.offset-pill:focus {
+  outline: none;
+  border-color: var(--accent-strong);
+  cursor: text;
+}
+
+.reset {
+  align-self: flex-start;
+}
+
+.toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+/* Buttons */
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.05s;
+}
+
+.btn:hover {
+  background: #262b36;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.primary {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #fff;
+  font-weight: 600;
+}
+.btn.primary:hover {
+  background: #2f74e0;
+}
+
+.btn.toggle.active {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #fff;
+}
+
+.key-select {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+/* Workspace layout */
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+.output-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Ultimate Guitar URL import */
+.input-path {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.input-path-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.import-url-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.import-url-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.import-url-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.import-url-input:disabled {
+  opacity: 0.6;
+}
+
+.import-error {
+  margin: 0;
+  color: #f87171;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Input */
+.input-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-textarea {
+  width: 100%;
+  min-height: 420px;
+  resize: vertical;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+}
+
+.sheet-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: 10px 0 0;
+}
+
+.verify-hint {
+  margin-top: 2px;
+}
+
+.chord-sample {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+/* Export bar */
+.export-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.export-bar .btn {
+  flex: 1 1 0;
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #fff;
+  font-weight: 600;
+}
+
+.export-bar .btn:hover {
+  background: #2f74e0;
+}
+
+.export-bar .btn:disabled {
+  opacity: 0.5;
+}
+
+/* Output sheet */
+.empty-state {
+  color: var(--muted);
+  padding: 40px 8px;
+  text-align: center;
+}
+
+.sheet {
+  background: #ffffff;
+  color: #14171c;
+  border-radius: 8px;
+  padding: 24px 22px;
+  overflow-x: auto;
+}
+
+/* Scrollable transposed sheet (great for long songs on an iPad). Disabled
+   during PDF export so the full sheet is captured un-clipped. */
+.sheet-scroll {
+  max-height: 72vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.sheet-meta {
+  margin-bottom: 14px;
+  border-bottom: 1px solid #e6e8ec;
+  padding-bottom: 10px;
+}
+.sheet-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.sheet-artist {
+  color: #555c68;
+  font-size: 14px;
+}
+
+.sheet-line {
+  position: relative;
+}
+
+/* Edit mode: clickable chord/text tokens the user can correct. */
+.editable-token {
+  cursor: pointer;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 rgba(29, 78, 216, 0.35);
+}
+
+.editable-token:hover,
+.editable-token:focus-visible {
+  outline: none;
+  background: #e7efff;
+  box-shadow: inset 0 0 0 1px #1d4ed8;
+}
+
+/* Inline editor shown when a chord is clicked in edit mode. */
+.chord-edit-input {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1d4ed8;
+  padding: 0 2px;
+  margin: 0;
+  border: 1px solid #1d4ed8;
+  border-radius: 3px;
+  background: #fff;
+  outline: none;
+}
+
+/* Subtle cue that the sheet is in edit mode. */
+.output-panel.editing .sheet {
+  box-shadow: inset 0 0 0 2px rgba(29, 78, 216, 0.35);
+}
+
+.line {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre;
+  tab-size: 4;
+}
+
+.chord-line .chord,
+.chord {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.lyric-line {
+  color: #14171c;
+}
+
+.empty-line {
+  height: 0.9em;
+}
+
