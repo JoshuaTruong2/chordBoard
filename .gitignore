@@ -1,4 +1,24 @@
+# Dependencies
 node_modules
+
+# Build
 dist
-.DS_Store
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Local Vite / tooling
 *.local
+
+# Vercel CLI
+.vercel
+
+# OS / editor
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
