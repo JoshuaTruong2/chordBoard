@@ -26,8 +26,8 @@ fetches the page server-side).
 
 ## Getting the chord sheet in
 
-1. **Ultimate Guitar link** — paste a free *Chords* tab URL and hit Import
-   (Official/Pro tabs are not supported).
+1. **Chord site link** — paste an **Ultimate Guitar** (free Chords tab) or
+   **Kpopchords** URL and hit Import.
 2. **Or paste** — copy the chord block from any site and paste it in.
 3. **Or upload** a `.txt` / `.cho` / `.pro` / `.crd` file.
 
@@ -46,7 +46,7 @@ For iPad on the same Wi‑Fi: `npm run dev -- --host`, then open the Network URL
 
 ## Deploy on Vercel
 
-The production Import endpoint is `api/import-ug.js` (same `{ url }` → `{ text, meta }` contract as local).
+The production Import endpoint is `api/import.js` (same `{ url }` → `{ text, meta }` contract as local; routes UG vs Kpopchords by hostname).
 
 1. Put the project on GitHub (this folder is not a git repo yet — `git init` + push).
 2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import the repo.

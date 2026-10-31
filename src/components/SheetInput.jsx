@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import FullscreenButton from "./FullscreenButton.jsx";
 import AutoScrollBar from "./AutoScrollBar.jsx";
-import { importFromUltimateGuitar } from "../lib/importUg.js";
+import { importFromChordUrl } from "../lib/importChords.js";
 
 export default function SheetInput({
   value,
@@ -34,7 +34,7 @@ export default function SheetInput({
     setImporting(true);
     setImportError("");
     try {
-      const { text } = await importFromUltimateGuitar(url);
+      const { text } = await importFromChordUrl(url);
       onChange(text);
     } catch (err) {
       setImportError(err?.message || "Import failed.");
@@ -67,12 +67,12 @@ export default function SheetInput({
       </div>
 
       <div className="input-path">
-        <span className="input-path-label">Ultimate Guitar link</span>
+        <span className="input-path-label">Chord site link</span>
         <form className="import-url-row" onSubmit={handleImportUrl}>
           <input
             type="url"
             className="import-url-input"
-            placeholder="https://tabs.ultimate-guitar.com/tab/…/chords-…"
+            placeholder="Ultimate Guitar or Kpopchords URL…"
             value={importUrl}
             onChange={(e) => {
               setImportUrl(e.target.value);
@@ -83,7 +83,7 @@ export default function SheetInput({
             autoCorrect="off"
             spellCheck={false}
             disabled={importing}
-            aria-label="Ultimate Guitar URL"
+            aria-label="Chord site URL"
           />
           <button className="btn" type="submit" disabled={importing || !importUrl.trim()}>
             {importing ? "Importing…" : "Import"}
@@ -102,7 +102,7 @@ export default function SheetInput({
           ref={textareaRef}
           className="sheet-textarea"
           placeholder={
-            "If the link doesn’t work, copy the chords from Ultimate Guitar and paste them here.\n\nChords over lyrics, or ChordPro ([G]Amazing [C]grace), both work."
+            "If the link doesn’t work, copy the chords and paste them here.\n\nChords over lyrics, or ChordPro ([G]Amazing [C]grace), both work."
           }
           value={value}
           spellCheck={false}
@@ -111,8 +111,8 @@ export default function SheetInput({
       </div>
 
       <p className="hint">
-        Use a free <strong>Chords</strong> tab (not Official/Pro). If import fails, paste the sheet
-        manually — same result.
+        Supports <strong>Ultimate Guitar</strong> (free Chords tabs) and <strong>Kpopchords</strong>.
+        If import fails, paste the sheet manually — same result.
       </p>
       {value && (
         <AutoScrollBar

@@ -1,7 +1,6 @@
-import { fetchUltimateGuitar } from "../server/ugExtract.js";
+import { importChordUrl } from "../server/chordImport.js";
 
-// Vercel serverless function: POST /api/import-ug { url } → { text, meta }
-// Same contract as the Vite dev middleware in server/ugImportPlugin.js.
+// Kept for backward compatibility — prefer POST /api/import.
 
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
@@ -16,20 +15,16 @@ export default async function handler(req, res) {
 
   try {
     const url = String(req.body?.url || "").trim();
-    if (!url) {
-      res.status(400).json({ error: "Missing url." });
-      return;
-    }
-
-    const result = await fetchUltimateGuitar(url);
+    const result = await importChordUrl(url);
     res.status(200).json(result);
   } catch (err) {
     const message = err?.message || "Import failed.";
-    const status = /Only Ultimate Guitar|Missing url|No chord sheet|not valid JSON|layout may have changed|Official\/Pro|doesn’t look like|free “Chords”|returned \d+/i.test(
-      message
-    )
-      ? 400
-      : 502;
+    const status =
+      /Missing url|doesn’t look like|Supported sites|Only |No chord|not valid JSON|layout may have changed|Official\/Pro|free “Chords”|returned \d+|Could not find/i.test(
+        message
+      )
+        ? 400
+        : 502;
     res.status(status).json({ error: message });
   }
 }

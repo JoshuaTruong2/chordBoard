@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { ugImportPlugin } from "./server/ugImportPlugin.js";
+import { chordImportPlugin } from "./server/importPlugin.js";
 
 export default defineConfig({
-  plugins: [react(), ugImportPlugin()],
+  plugins: [react(), chordImportPlugin()],
   server: {
     port: 5173,
   },
